@@ -20,8 +20,8 @@ Function Get-SPTerms($navTerms, $metdataFilePath){
     foreach($navTerm in $navTerms){
         Add-Content -Path $metadataFilePath -Value ([System.String]::Format("{0};{1};{2};{3};{4};{5};{6};{7}", 
                                                         $navTerm.TaxonomyName, 
-							                            $navTerm.Terms.Count,
-							                            $navTerm.LinkType,
+							$navTerm.Terms.Count,
+							$navTerm.LinkType,
                                                         $navTerm.ExcludeFromGlobalNavigation, 
                                                         $navTerm.ExcludeFromCurrentNavigation, 
                                                         $navTerm.FriendlyUrlSegment, 
@@ -39,7 +39,8 @@ Function Backup-MetadataService([Microsoft.SharePoint.SPSite]$site){
     $termStore = $session.TermStores["Servicio de metadatos administrados"]
     $group = $termStore.GetSiteCollectionGroup($site)
     $termSet = $group.TermSets["Navegación del sitio"]
-    $navTermSet = [Microsoft.SharePoint.Publishing.Navigation.NavigationTermSet]::GetAsResolvedByWeb($termSet, $site.RootWeb, "GlobalNavigationTaxonomyProvider")
+    $navTermSet = [Microsoft.SharePoint.Publishing.Navigation.NavigationTermSet]::GetAsResolvedByWeb($termSet, 
+								$site.RootWeb, "GlobalNavigationTaxonomyProvider")
 
     if($navTermSet.Terms.Count -gt 0){
         $metadataFilePath = [System.IO.Path]::Combine($pathFolder, $site.RootWeb.Title + $group.Name + ".txt")
@@ -61,12 +62,6 @@ Try{
     }
     foreach($webApp in $webApps){
         foreach($site in $webApp.Sites){
-            $uri = New-Object -TypeName System.Uri -ArgumentList $site.Url
-    
-            $targetFile = [System.String]::Format("Backup_{0}{1}{2}{3}{4}.bat", $uri.Host, $uri.PathAndQuery.Replace("/","_"), $currentDate.Year, $currentDate.Month, $currentDate.Day)
-            $pathFile =  ([System.IO.Path]::Combine($pathFolder,$targetFile))
-
-            Backup-SPSite -Identity $site.Url -Path $pathFile
             Backup-MetadataService $site
         }
     }
