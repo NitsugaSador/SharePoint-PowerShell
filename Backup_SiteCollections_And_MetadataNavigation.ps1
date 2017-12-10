@@ -1,12 +1,16 @@
 ﻿Param(
-    [string]$WebAppUrl = ""
+    [Parameter(Position=0,mandatory=$true)]
+    [string]$targetLocation
+    [Parameter(Position=1,mandatory=$false)]
+    [string]$WebAppUrl = "",
+    
 )
 
 if((Get-PSSnapin -Name Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue) -eq $null){
     Add-PSSnapin -Name Microsoft.SharePoint.PowerShell
 }
 
-Set-Location C:\Deploy
+Set-Location $targetLocation
 
 $currentDate = Get-Date
 $targetFolder = [System.String]::Concat($currentDate.Year, $currentDate.Month.ToString("D2"), $currentDate.Day.ToString("D2"))
